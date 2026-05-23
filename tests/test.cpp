@@ -52,21 +52,21 @@ TEST(Transaction, Same_src_and_dest)
 TEST(Transaction, Negative_value)
 {
 	Account a(1, 500);
-	Account b(1, 500);
+	Account b(2, 500);
 	MockTransaction t;
 	EXPECT_THROW(t.Make(a, b, -8), std::invalid_argument);
 }
 TEST(Transaction, Small_value)
 {
 	Account a(1, 500);
-	Account b(1, 500);
+	Account b(2, 500);
 	MockTransaction t;
 	EXPECT_THROW(t.Make(a, b, 11), std::logic_error);
 }
 TEST(Transaction, Unaccessible_action)
 {
 	Account a(1, 500);
-	Account b(1, 500);
+	Account b(2, 500);
 	MockTransaction t;
 	t.set_fee(80);
 	EXPECT_FALSE(t.Make(a, b, 110));
@@ -84,8 +84,8 @@ TEST(Transaction, Pay_denied)
 {
 	MockTransaction t;
 	t.set_fee(1);
-	MockAccount from(5, 0);
-	MockAccount to(5, 0);
+	MockAccount from(1, 0);
+	MockAccount to(2, 0);
 	EXPECT_CALL(to, GetBalance()).WillOnce(testing::Return(0));
 	EXPECT_FALSE(t.Make(from,to,120));
 }
