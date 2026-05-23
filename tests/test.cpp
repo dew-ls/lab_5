@@ -75,17 +75,25 @@ TEST(Transaction, Successfull_make)
 {
 	MockTransaction t;
 	t.set_fee(1);
-	MockAccount from(1, 10000);
-	MockAccount to(2, 0);
-	EXPECT_CALL(to, GetBalance()).WillOnce(testing::Return(10000));
-	EXPECT_TRUE(t.Make(from, to, 100));
+	MockAccount a(1, 1000);
+	MockAccount b(2, 0);
+	EXPECT_CALL(b, GetBalance()).WillOnce(testing::Return(10000));
+	EXPECT_TRUE(t.Make(a, b, 100));
 }
 TEST(Transaction, Pay_denied)
 {
 	MockTransaction t;
 	t.set_fee(1);
-	MockAccount from(1, 0);
-	MockAccount to(2, 0);
-	EXPECT_CALL(to, GetBalance()).WillOnce(testing::Return(0));
-	EXPECT_FALSE(t.Make(from,to,120));
+	MockAccount a(1, 0);
+	MockAccount b(2, 0);
+	EXPECT_CALL(b, GetBalance()).WillOnce(testing::Return(0));
+	EXPECT_FALSE(t.Make(a,b,120));
+}
+TEST(Transaction, Save_to_database)
+{
+    Transaction t;
+    t.set_fee(1);
+    Account a(1, 1000);
+    Account b(2, 15);
+    t.Make(a, b, 500);
 }
