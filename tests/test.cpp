@@ -13,13 +13,6 @@ public:
 	MOCK_METHOD(void, Unlock,        (), (override));
 };
 
-class MockTransaction : public Transaction 
-{
-public:
-	MOCK_METHOD(void, SaveToDataBase, (Account& from, Account& to, int sum), (override));
-
-};
-
 // account tests
 TEST(Account, Change_balance_without_lock) 
 {
@@ -46,46 +39,58 @@ TEST(Account, Double_locks)
 TEST(Transaction, Same_src_and_dest)
 {
 	Account a(1, 500);
-	MockTransaction t;
+	Transaction t;
 	EXPECT_THROW(t.Make(a, a, 200), std::logic_error);
 }
 TEST(Transaction, Negative_value)
 {
 	Account a(1, 500);
 	Account b(2, 500);
-	MockTransaction t;
+	Transaction t;
 	EXPECT_THROW(t.Make(a, b, -8), std::invalid_argument);
 }
 TEST(Transaction, Small_value)
 {
 	Account a(1, 500);
 	Account b(2, 500);
-	MockTransaction t;
+	Transaction t;
 	EXPECT_THROW(t.Make(a, b, 11), std::logic_error);
 }
 TEST(Transaction, Unaccessible_action)
 {
 	Account a(1, 500);
 	Account b(2, 500);
-	MockTransaction t;
+	Transaction t;
 	t.set_fee(80);
 	EXPECT_FALSE(t.Make(a, b, 110));
 }
 TEST(Transaction, Successfull_make) 
 {
-	MockTransaction t;
+	Transaction t;
 	t.set_fee(1);
 	MockAccount a(1, 1000);
 	MockAccount b(2, 0);
+    EXPECT_CALL(a, Lock()).Times(1);
+    EXPECT_CALL(a, Unlock()).Times(1);
+    EXPECT_CALL(b, Lock()).Times(1);
+    EXPECT_CALL(b, Unlock()).Times(1);
+    EXPECT_CALL(b, ChangeBalance(100)).Times(1);
+    EXPECT_CALL(b, ChangeBalance(-101)).Times(1);
 	EXPECT_CALL(b, GetBalance()).WillOnce(testing::Return(10000));
 	EXPECT_TRUE(t.Make(a, b, 100));
 }
 TEST(Transaction, Pay_denied)
 {
-	MockTransaction t;
+	Transaction t;
 	t.set_fee(1);
 	MockAccount a(1, 0);
 	MockAccount b(2, 0);
+    EXPECT_CALL(a, Lock()).Times(1);
+    EXPECT_CALL(a, Unlock()).Times(1);
+    EXPECT_CALL(b, Lock()).Times(1);
+    EXPECT_CALL(b, Unlock()).Times(1);
+    EXPECT_CALL(b, ChangeBalance(100)).Times(1);
+    EXPECT_CALL(b, ChangeBalance(-101)).Times(1);
 	EXPECT_CALL(b, GetBalance()).WillOnce(testing::Return(0));
 	EXPECT_FALSE(t.Make(a,b,120));
 }
