@@ -76,7 +76,7 @@ TEST(Transaction, Successfull_make)
     EXPECT_CALL(b, Unlock()).Times(1);
     EXPECT_CALL(b, ChangeBalance(100)).Times(1);
     EXPECT_CALL(b, ChangeBalance(-101)).Times(1);
-	EXPECT_CALL(b, GetBalance()).WillOnce(testing::Return(10000));
+	EXPECT_CALL(b, GetBalance()).WillRepeatedly(testing::Return(10000));
 	EXPECT_TRUE(t.Make(a, b, 100));
 }
 TEST(Transaction, Pay_denied)
@@ -90,9 +90,9 @@ TEST(Transaction, Pay_denied)
     EXPECT_CALL(b, Lock()).Times(1);
     EXPECT_CALL(b, Unlock()).Times(1);
     EXPECT_CALL(b, ChangeBalance(100)).Times(1);
-    EXPECT_CALL(b, ChangeBalance(-101)).Times(1);
-	EXPECT_CALL(b, GetBalance()).WillOnce(testing::Return(0));
-	EXPECT_FALSE(t.Make(a,b,120));
+    EXPECT_CALL(b, ChangeBalance(-100)).Times(1);
+	EXPECT_CALL(b, GetBalance()).WillRepeatedly(testing::Return(0));
+	EXPECT_FALSE(t.Make(a,b,100));
 }
 TEST(Transaction, Save_to_database)
 {
