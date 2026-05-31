@@ -28,7 +28,7 @@ jobs:
         run: cmake --build build
 
       - name: Test
-        run: cmake --build build --target test -- ARGS=--verbose
+        run: ctest --test-dir build --output-on-failure
 
       - name: Collect coverage
         run: |
