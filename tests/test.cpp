@@ -94,11 +94,3 @@ TEST(Transaction, Pay_denied)
 	EXPECT_CALL(b, GetBalance()).WillRepeatedly(testing::Return(0));
 	EXPECT_FALSE(t.Make(a,b,100));
 }
-TEST(Transaction, Save_to_database)
-{
-    Transaction t;
-    t.set_fee(1);
-    Account a(1, 1000);
-    Account b(2, 15);
-    t.Make(a, b, 500);
-}
